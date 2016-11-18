@@ -2,3 +2,7 @@ language: elixir
 elixir:
   - 1.3.4
 
+branches:
+  except: 
+    - md-assets
+    - gh-pages
