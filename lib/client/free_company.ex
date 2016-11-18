@@ -82,16 +82,15 @@ defmodule LodestonerEx.Client.FreeCompany do
     - Lodestone returns a non-200 HTTP response.
 
   ## Examples
-
-			iex(87)> LodestonerEx.Client.FreeCompany.info!("9232238498621162014")
+			iex> LodestonerEx.Client.FreeCompany.info!("9232238498621162014")
 			%{active: "Always", active_members: "501", estate_profile: nil,
 				focus: ["Role-playing", "Leveling", "Casual", "Hardcore", "Dungeons",
 				 "Guildhests", "Trials", "Raids", "PvP"],
-				formed: {:ok,
-				 %DateTime{calendar: Calendar.ISO, day: 24, hour: 20, microsecond: {0, 0},
-					minute: 26, month: 8, second: 59, std_offset: 0, time_zone: "Etc/UTC",
-					utc_offset: 0, year: 2013, zone_abbr: "UTC"}}, name: "MagiTaint Mayhem",
-				rank: %{last_month: "7", last_week: "5", now: "8"}, recruitment: "Open",
+				formed: %DateTime{calendar: Calendar.ISO, day: 24, hour: 20,
+				 microsecond: {0, 0}, minute: 26, month: 8, second: 59, std_offset: 0,
+				 time_zone: "Etc/UTC", utc_offset: 0, year: 2013, zone_abbr: "UTC"},
+				name: "MagiTaint Mayhem", rank: %{last_month: "7", last_week: "5", now: "8"},
+				recruitment: "Open",
 				seeking: ["Tank", "Healer", "DPS", "Crafter", "Gatherer"],
 				slogan: "A guild for lesbian/gay/bi/trans/ally folk.   To join us, you *MUST* apply at rtgc.enjin.com/ffxiv and request membership.   This app is ONLY a waitlist.",
 				tag: "«TAINT»"}

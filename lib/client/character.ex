@@ -164,24 +164,36 @@ defmodule LodestonerEx.Client.Character do
                 titles = Floki.find(profile_box, ".txt") 
                         |> Enum.map(&Floki.text/1)
                 values = Floki.find(profile_box, ".txt_name")
-                         |> Enum.map(&Floki.text/1)
                 List.zip([titles, values])
               end)
               |> Enum.into(%{})
-    %{
-      "Nameday" => nameday,
-      "Guardian" => guardian,
-      "City-state" => city_state,
-    } = profile
+
+    nameday    = profile |> Map.get("Nameday")    |> Floki.text
+    guardian   = profile |> Map.get("Guardian")   |> Floki.text
+    city_state = profile |> Map.get("City-state") |> Floki.text
 
     # This key can be absent so pattern match above would freak out
     # if we put it there.
-    free_company = Map.get(profile, "Free Company")
+    free_company = case Map.fetch(profile, "Free Company") do
+      {:ok, fc_html} ->
+        %{name: Floki.text(fc_html), 
+         lodestone_id: fc_html
+                       |> Floki.find("a")
+                       |> Floki.attribute("href")
+                       |> List.first
+                       |> String.split("/")
+                       |> Enum.at(-2)
+        }
+      :error ->
+        nil
+    end
 
     grand_company = case Map.get(profile, "Grand Company") do
-      nil -> [nil, nil]
-      gc_str -> [gc_name, gc_rank] = String.split(gc_str, "/")
-                %{name: gc_name, rank: gc_rank}
+      nil -> 
+        [nil, nil]
+      gc_html -> 
+        [gc_name, gc_rank] = gc_html |> Floki.text |> String.split("/")
+        %{name: gc_name, rank: gc_rank}
     end
 
     classes = character_info_class_list(body)
@@ -190,7 +202,7 @@ defmodule LodestonerEx.Client.Character do
 
     elements = character_elements(body)
 
-    {minions, mounts} = character_minions_and_mounts(body)
+    {mounts, minions} = character_minions_and_mounts(body)
 
     avatar_url = Floki.find(body, ".player_name_txt .player_name_thumb img")
                  |> Floki.attribute("src")
@@ -346,21 +358,20 @@ defmodule LodestonerEx.Client.Character do
     A list of maps.  See examples.
 
 	## Examples
-
 			iex> LodestonerEx.Client.Character.achievements!("6128486") |> List.first
-			%{date: {:ok,
-				 %DateTime{calendar: Calendar.ISO, day: 25, hour: 3, microsecond: {0, 0},
-					minute: 59, month: 10, second: 51, std_offset: 0, time_zone: "Etc/UTC",
-					utc_offset: 0, year: 2016, zone_abbr: "UTC"}},
+			%{date: %DateTime{calendar: Calendar.ISO, day: 25, hour: 3, microsecond: {0, 0},
+				 minute: 59, month: 10, second: 51, std_offset: 0, time_zone: "Etc/UTC",
+				 utc_offset: 0, year: 2016, zone_abbr: "UTC"},
 				icon: "http://img.finalfantasyxiv.com/lds/pc/global/images/itemicon/63/63eff52f13b87097fd1ac2fc2bd5e9fbef35924c.png?1473652662",
 				id: "1594", name: "Floor the Horde"}
+
 			iex> LodestonerEx.Client.Character.achievements!("6128486") |> List.last
-			%{date: {:ok,
-				 %DateTime{calendar: Calendar.ISO, day: 10, hour: 20, microsecond: {0, 0},
-					minute: 58, month: 1, second: 52, std_offset: 0, time_zone: "Etc/UTC",
-					utc_offset: 0, year: 2014, zone_abbr: "UTC"}},
+			%{date: %DateTime{calendar: Calendar.ISO, day: 10, hour: 20,
+				 microsecond: {0, 0}, minute: 58, month: 1, second: 52, std_offset: 0,
+				 time_zone: "Etc/UTC", utc_offset: 0, year: 2014, zone_abbr: "UTC"},
 				icon: "http://img.finalfantasyxiv.com/lds/pc/global/images/itemicon/66/66ebf6f40f5d7259d4bf9cbb5b52bfb1aa77b06f.png?1473652658",
-				id: "323", name: "All the More Region to Leve I"} 
+				id: "323", name: "All the More Region to Leve I"}
+
 			iex> LodestonerEx.Client.Character.achievements!("6128486") |> Enum.count
 			398
   """

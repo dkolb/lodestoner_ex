@@ -6,7 +6,7 @@ defmodule LodestonerEx.Utils do
     Regex.run(~r"ldst_strftime\((\d+).*\)", text, [capture: :all_but_first])
     |> List.first
     |> String.to_integer
-    |> DateTime.from_unix
+    |> DateTime.from_unix!
   end
 
   def get_page_or_raise_client_error(path) do
