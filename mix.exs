@@ -3,7 +3,7 @@ defmodule LodestonerEx.Mixfile do
 
   def project do
     [app: :lodestoner_ex,
-     version: "0.0.1",
+     version: "1.0.0",
      description: "A webpage scraper for Lodestone, the character " <>
       "information site for Final Fantasy XIV.",
      elixir: "~> 1.3",
